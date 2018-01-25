@@ -1,0 +1,2 @@
+2018-01-25 15:52:00 [main] main.Main.main()
+WARNING: Hello tinnylog
