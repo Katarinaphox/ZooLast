@@ -2,13 +2,20 @@ package main;
 
 import java.util.Scanner;
 
+
 import java.util.Set;
+
+import javax.swing.text.Document;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
 import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.writers.ConsoleWriter;
 import org.pmw.tinylog.writers.FileWriter;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import animals.*;
 import animals.Animal.IAnimalDeadListener;
@@ -25,7 +32,13 @@ import java.util.List;
 import java.util.Map;
 import java.io.File;
 import java.util.*;
-import io.*;
+import java.io.File;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+import org.w3c.dom.Element;
+
 
 public class Main implements IAnimalDeadListener {
 	public static final Scanner sc = new Scanner(System.in);
@@ -103,10 +116,55 @@ public class Main implements IAnimalDeadListener {
 	}
 
 	public static void main(String[] args) {
-		Configurator.defaultConfig().writer(new ConsoleWriter()).addWriter(new FileWriter("log.txt")).level(Level.INFO)
-				.activate();
-		Logger.warn("Hello tinnylog");
-		new Main();
+		//Configurator.defaultConfig().writer(new ConsoleWriter()).addWriter(new FileWriter("log.txt")).level(Level.INFO)
+			//	.activate();
+		//Logger.warn("Hello tinnylog");
+		//new Main();
+		try {
+	         File inputFile = new File("input.txt");
+	         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	         Document doc = dBuilder.parse(inputFile);
+	         doc.getDocumentElement().normalize();
+	         System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+	         NodeList nList = doc.getElementsByTagName("student");
+	         System.out.println("----------------------------");
+	         
+	         for (int temp = 0; temp < nList.getLength(); temp++) {
+	            Node nNode = nList.item(temp);
+	            System.out.println("\nCurrent Element :" + nNode.getNodeName());
+	            
+	            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+	               Element eElement = (Element) nNode;
+	               System.out.println("Student roll no : " 
+	                  + eElement.getAttribute("rollno"));
+	               System.out.println("First Name : " 
+	                  + eElement
+	                  .getElementsByTagName("firstname")
+	                  .item(0)
+	                  .getTextContent());
+	               System.out.println("Last Name : " 
+	                  + eElement
+	                  .getElementsByTagName("lastname")
+	                  .item(0)
+	                  .getTextContent());
+	               System.out.println("Nick Name : " 
+	                  + eElement
+	                  .getElementsByTagName("nickname")
+	                  .item(0)
+	                  .getTextContent());
+	               System.out.println("Marks : " 
+	                  + eElement
+	                  .getElementsByTagName("marks")
+	                  .item(0)
+	                  .getTextContent());
+	            }
+	         }
+	      } catch (Exception e) {
+	         e.printStackTrace();
+	      }
+	   }
+	
 		sc.close();
 		// Input.readFromFile();
 	}
