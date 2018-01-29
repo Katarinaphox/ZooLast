@@ -55,6 +55,13 @@ public class ExtensibleCage<T extends Animal> implements Animal.IAnimalDeadListe
 			}
 		}
 	}
+	public void setCage(List<T> cage) {
+		this.cage = cage;
+	}
+
+	public List<T> getCage() {
+		return cage;
+	}
 
 	public void setAnimalDeadListener(IAnimalDeadListener animalDeadListener) {
 		this.animalDeadListener = animalDeadListener;
@@ -69,9 +76,9 @@ public class ExtensibleCage<T extends Animal> implements Animal.IAnimalDeadListe
 
 	public String toString() {
 		Collections.sort(cage, ExtensibleCage.sizeComparator);
-		//Collections.sort(cage, (Comparator<Animal>) (arg0,arg1) ->
-		//(int) Math.ceil(arg1.get.Size()-arg0.get.Size()));
-			
+		// Collections.sort(cage, (Comparator<Animal>) (arg0,arg1) ->
+		// (int) Math.ceil(arg1.get.Size()-arg0.get.Size()));
+
 		StringBuilder sb = new StringBuilder();
 		if (cage.size() == 0) {
 			sb.append("Cage of ");
@@ -103,15 +110,15 @@ public class ExtensibleCage<T extends Animal> implements Animal.IAnimalDeadListe
 		}
 
 	}
-	
+
 	public int getSize() {
 		return this.cage.size();
 	}
-	
+
 	public boolean isEmpty() {
 		return this.cage.isEmpty();
 	}
-	
+
 	public T getAnimal(int i) {
 		return this.cage.get(i);
 	}

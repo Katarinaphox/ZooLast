@@ -2,7 +2,6 @@ package main;
 
 import java.util.Scanner;
 
-
 import java.util.Set;
 
 import javax.swing.text.Document;
@@ -26,6 +25,8 @@ import input.Input;
 import interfaces.Jumpable;
 import interfaces.Soundable;
 import io.FileImporter;
+import io.XmlSaver;
+
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -38,7 +39,6 @@ import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
-
 
 public class Main implements IAnimalDeadListener {
 	public static final Scanner sc = new Scanner(System.in);
@@ -55,9 +55,27 @@ public class Main implements IAnimalDeadListener {
 		while (userInput) {
 			System.out.println("\nChoose the number to do anything...");
 			System.out.println(
-					"1) Info \n 2) To feed animal \n 3) To create animal \n 4) To start a competition \n 5) To remove animal \n 6) to import list of animals \n");
+					"\\n\0) To import animals from csv file \n 1) Info \n 2) To feed animal \n 3) To create animal \n 4) To start a competition \n 5) To remove animal \n");
 			String answer = sc.nextLine();
 			switch (inputValidation(answer)) {
+			case 0: {
+				System.out.println("Enter the path:");
+				String directoryPath = sc.nextLine();
+				searchCsvFile(directoryPath);
+			}
+				try {
+					List<Animal> arrAnimal = FileImporter.importFromFile("animals.csv");
+					for (Animal an : arrAnimal) {
+						sortToCage(an);
+						System.out.println(an.toString());
+					}
+
+				} catch (AnimalCreationException e) {
+					System.out.println("File converting error");
+
+				}
+				break;
+
 			case 1: {
 				showAnimalInfo();
 				break;
@@ -91,80 +109,33 @@ public class Main implements IAnimalDeadListener {
 				break;
 			}
 			case 5: {
-				removeAnimal();
-				break;
-			}
-			case 6: {
-				System.out.println("Enter the path:");
-				String directoryPath = sc.nextLine();
-				searchCsvFile(directoryPath);
-			}
-				try {
-					List<Animal> arrAnimal = FileImporter.importFromFile("animals.csv");
-					for (Animal an : arrAnimal) {
-						sortToCage(an);
-						System.out.println(an.toString());
-					}
+				if (cages.get(Mammal.class.getSimpleName()).getSize() == 0
+						&& cages.get(Bird.class.getSimpleName()).getSize() == 0
+						&& cages.get(Herbivore.class.getSimpleName()).isEmpty()) {
+					System.out.println("All animals are absent today");
+					break;
+				} else
 
-				} catch (AnimalCreationException e) {
-					System.out.println("File converting error");
+				{
+					removeAnimal();
 				}
+			}
+				break;
+			default:
+				userInput = false;
 				break;
 			}
 
 		}
+		XmlSaver.save(cages);
 	}
 
 	public static void main(String[] args) {
-		//Configurator.defaultConfig().writer(new ConsoleWriter()).addWriter(new FileWriter("log.txt")).level(Level.INFO)
-			//	.activate();
-		//Logger.warn("Hello tinnylog");
-		//new Main();
-		try {
-	         File inputFile = new File("input.txt");
-	         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-	         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-	         Document doc = dBuilder.parse(inputFile);
-	         doc.getDocumentElement().normalize();
-	         System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-	         NodeList nList = doc.getElementsByTagName("student");
-	         System.out.println("----------------------------");
-	         
-	         for (int temp = 0; temp < nList.getLength(); temp++) {
-	            Node nNode = nList.item(temp);
-	            System.out.println("\nCurrent Element :" + nNode.getNodeName());
-	            
-	            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-	               Element eElement = (Element) nNode;
-	               System.out.println("Student roll no : " 
-	                  + eElement.getAttribute("rollno"));
-	               System.out.println("First Name : " 
-	                  + eElement
-	                  .getElementsByTagName("firstname")
-	                  .item(0)
-	                  .getTextContent());
-	               System.out.println("Last Name : " 
-	                  + eElement
-	                  .getElementsByTagName("lastname")
-	                  .item(0)
-	                  .getTextContent());
-	               System.out.println("Nick Name : " 
-	                  + eElement
-	                  .getElementsByTagName("nickname")
-	                  .item(0)
-	                  .getTextContent());
-	               System.out.println("Marks : " 
-	                  + eElement
-	                  .getElementsByTagName("marks")
-	                  .item(0)
-	                  .getTextContent());
-	            }
-	         }
-	      } catch (Exception e) {
-	         e.printStackTrace();
-	      }
-	   }
-	
+		Configurator.defaultConfig().writer(new ConsoleWriter()).addWriter(new FileWriter("log.txt")).level(Level.INFO)
+				.activate();
+		Logger.warn("Hello tinnylog");
+		new Main();
+
 		sc.close();
 		// Input.readFromFile();
 	}
@@ -265,7 +236,6 @@ public class Main implements IAnimalDeadListener {
 		} else {
 			return 6;
 		}
-
 	}
 
 	public Animal createAnimal() throws AnimalCreationException {
@@ -490,11 +460,9 @@ public class Main implements IAnimalDeadListener {
 	public void onAnimalDead(Animal animal) {
 		System.out.println("It died " + animal.toString());
 		ExtensibleCage cage = this.cages.get(animal.getClass().getSimpleName());
-
 	}
 
 	private void searchCsvFile(String directoryPath) {
-		// TODO Auto-generated method stub
 
 	}
 }
